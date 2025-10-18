@@ -17,3 +17,9 @@
 Добавить все файлы в индекс
 	git add --all
 	git add . 
+
+Как сохранить изменения
+	git commit -m "My first commit"
+
+Чтобы загрузить изменения на удалённый репозиторий
+	git push -u origin master
