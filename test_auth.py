@@ -1,7 +1,9 @@
+from pprint import pprint
+
 import requests
 import json
 
-def post_login():
+def test_post_token():
     body = json.dumps({
         "email": "tatarstan@gmail.com",
         "password": "string"
@@ -10,7 +12,7 @@ def post_login():
         'https://mai-tech.ru/api/auth/login/',
         data = body
     )
-    print(responce.status_code)
-    print(responce.json())
+    my_token = responce['access_token']
+    assert responce.status_code == 200
+    pprint(responce.json())
 
-post_login()
