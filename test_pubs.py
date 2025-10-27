@@ -28,6 +28,5 @@ def test_get_pub_detail(get_token):
     # {'id': 101, 'theme_id': 3875813, 'title': None, 'text': None, 'highlights': None, 'is_main': False, 'trusted': True, 'url': None, 'source': None, 'force': None, 'lang': None, 'entities': {}, 'media': None, 'date': None, 'created_at': '2023-07-12T18:07:42.894142', 'updated_at': '2023-07-12T18:07:42.894142'}
     with check.check():
         assert responce['theme_id'] == 3875813
-    with check.check():
         assert responce['is_main'] is False
     print('okey')
