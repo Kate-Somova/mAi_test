@@ -1,0 +1,2 @@
+ACCESS_TOKEN = None
+USER_DATA = None

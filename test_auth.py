@@ -1,53 +1,59 @@
-import json
-from pprint import pprint
-
-import pytest
 import requests
+from pytest_check import check
+
+import config
 
 
-@pytest.fixture()
-def get_token():
-    body = json.dumps({
-        "email": "tatarstan@gmail.com",
-        "password": "string"
-    })
-    responce = requests.post(
-        'https://mai-tech.ru/api/auth/login/',
-        data=body
-    ).json()
-    return responce['access_token']
+# def test_get_token():
+#    body = json.dumps({
+#        "email": "tatarstan@gmail.com",
+#        "password": "string"
+#    })
+#    responce = requests.post(
+#        'https://mai-tech.ru/api/auth/login/',
+#        data=body
+#    )
+#    assert responce.status_code == 200
+#    pprint(responce.json())
 
 
-def test_get_token():
-    body = json.dumps({
-        "email": "tatarstan@gmail.com",
-        "password": "string"
-    })
-    responce = requests.post(
-        'https://mai-tech.ru/api/auth/login/',
-        data=body
-    )
-    assert responce.status_code == 200
-    pprint(responce.json())
-
-
-def test_signup():
+def test_signup_200():
     body = {
-        "email": "testsssdsdd@example.com",
+        "email": "tesdaad@example.com",
         "password": "string",
-        "first_name": "Kates",
-        "last_name": "test",
-        "timezone": "string",
-        "organization": "string",
+        "first_name": "Kate",
+        "last_name": "Somova",
+        "timezone": "+3",
+        "organization": "OON",
         "phone_number": "+7(926)777-77-79",
-        "phone_country_code": "string",
-        "lang": "str",
-        "rate": "ele"
+        "phone_country_code": "+7",
+        "lang": "RU",
+        "rate": "org"
     }
     responce = requests.post(
         'https://mai-tech.ru/api/auth/signup/',
         json=body
     )
     assert responce.status_code == 200
-    pprint(responce.json())
-    # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjE1OTI1MzEsImlhdCI6MTc2MTU1NjUzMSwic2NvcGUiOiJhY2Nlc3NfdG9rZW4iLCJzdWIiOiJ0ZXN0c3NzZHNkZEBleGFtcGxlLmNvbSJ9.7Y7Aj4_ZZjgfoOpBdTDQAu3t1DmlhmWRR3h81YvWFTA
+    data = responce.json()
+    config.ACCESS_TOKEN = data['access_token']
+    config.USER_DATA = body
+
+
+def test_new_profile_check():
+    headers = {
+        'Authorization': f"Bearer {config.ACCESS_TOKEN}"
+    }
+    responce = requests.get(
+        f'https://mai-tech.ru/api/profile',
+        headers=headers)
+    data = responce.json()
+    with check.check():
+        assert data['first_name'] == config.USER_DATA['first_name']
+        assert data['organization'] == config.USER_DATA['organization']
+        assert data['email'] == config.USER_DATA['email']
+        assert data['phone_number'] == config.USER_DATA['phone_number']
+        assert data['phone_country_code'] == config.USER_DATA['phone_country_code']
+        assert data['timezone'] == config.USER_DATA['timezone']
+        assert data['rate'] == config.USER_DATA['rate']
+        assert data['lang'] == config.USER_DATA['lang']
