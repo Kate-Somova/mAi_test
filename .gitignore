@@ -10,6 +10,7 @@ env/
 ENV/
 env.bak/
 venv.bak/
+/.idea/
 
 # Distribution / packaging
 build/
