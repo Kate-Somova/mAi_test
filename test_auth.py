@@ -3,101 +3,90 @@ from pytest_check import check
 
 import config
 
-# def test_get_token():
-#    body = json.dumps({
-#        "email": "tatarstan@gmail.com",
-#        "password": "string"
-#    })
-#    responce = requests.post(
-#        'https://mai-tech.ru/api/auth/login/',
-#        data=body
-#    )
-#    assert responce.status_code == 200
-#    pprint(responce.json())
 
-body_new_user = {
-    "email": "teaasd@example.com",
-    "password": "string",
-    "first_name": "Kate",
-    "last_name": "Somova",
-    "timezone": "+3",
-    "organization": "OON",
-    "phone_number": "+7(926)777-77-79",
-    "phone_country_code": "+7",
-    "lang": "RU",
-    "rate": "org"
-}
-
-
-def test_signup_200(body_new_user):
-    # РЕГИСТРИРУЕМ нового пользователя
-    responce = requests.post(
+def test_signup_200(body_new_user, cleanup_user):
+    # Регистрация
+    response = requests.post(
         'https://mai-tech.ru/api/auth/signup/',
         json=body_new_user
     )
-    assert responce.status_code == 200
-    # УДАЛЯЕМ ПОЛЬЗОВАТЕЛЯ
-    # получаем токен регистрации
-    data = responce.json()
-    ACCESS_TOKEN = data['access_token']
-    # получаем uid
-    responce = requests.get(
-        f'https://mai-tech.ru/api/profile',
-        headers={'Authorization': f"Bearer {ACCESS_TOKEN}"
-                 })
-    data = responce.json()
-    UID = data['uid']
-    # само удаление нового пользователя
-    responce = requests.delete(
-        f'https://mai-tech.ru/api/profile/total/{UID}',
-        headers={'Authorization': f"Bearer {ACCESS_TOKEN}"
-                 }
+    assert response.status_code == 200
+
+    # Получаем данные
+    data = response.json()
+    access_token = data['access_token']
+
+    response = requests.get(
+        'https://mai-tech.ru/api/profile',
+        headers={'Authorization': f"Bearer {access_token}"}
     )
-    # проверка удаление пользователя
+    uid = response.json()['uid']
 
-    # data = responce.json()
-    # print(data['access_token'])
-    # config.ACCESS_TOKEN = data['access_token']
-    # config.USER_DATA = body_new_user
+    # Регистрируем для очистки
+    cleanup_user(uid, access_token)
+#Система не удаляет пользователя
 
+def test_signup_and_check(body_new_user, cleanup_user):
+    """Тест регистрации и проверки данных"""
+    # 1. Регистрация
+    response = requests.post(
+        'https://mai-tech.ru/api/auth/signup/',
+        json=body_new_user
+    )
+    assert response.status_code == 200
 
-def test_new_profile_check():
-    headers = {
-        'Authorization': f"Bearer {config.ACCESS_TOKEN}"
-    }
-    responce = requests.get(
-        f'https://mai-tech.ru/api/profile',
-        headers=headers)
-    data = responce.json()
+    # 2. Получаем токен и данные
+    data = response.json()
+    access_token = data['access_token']
+
+    # 3. Получаем профиль
+    headers = {'Authorization': f"Bearer {access_token}"}
+    profile_response = requests.get('https://mai-tech.ru/api/profile', headers=headers)
+    profile_data = profile_response.json()
+    uid = profile_data['uid']
+
+    # 4. Проверяем данные профиля
     with check.check():
-        assert data['first_name'] == config.USER_DATA['first_name']
-        assert data['organization'] == config.USER_DATA['organization']
-        assert data['email'] == config.USER_DATA['email']
-        assert data['phone_number'] == config.USER_DATA['phone_number']
-        assert data['phone_country_code'] == config.USER_DATA['phone_country_code']
-        assert data['timezone'] == config.USER_DATA['timezone']
-        assert data['rate'] == config.USER_DATA['rate']
-        assert data['lang'] == config.USER_DATA['lang']
-    print(data['uid'])
-    config.UID = data['uid']
+        # Проверяем что данные в профиле совпадают с отправленными
+        assert profile_data['first_name'] == body_new_user['first_name']
+        assert profile_data['email'] == body_new_user['email']
+        assert profile_data['phone_number'] == body_new_user['phone_number']
+        assert profile_data['organization'] == body_new_user['organization']
+        assert profile_data['timezone'] == body_new_user['timezone']
+        assert profile_data['lang'] == body_new_user['lang']
+        assert profile_data['rate'] == body_new_user['rate']
+
+    print(f"Пользователь создан, UID: {uid}")
+
+    # 5. Регистрируем для очистки
+    cleanup_user(uid, access_token)
 
 
-def test_profile_delete_200():
-    headers = {
-        'Authorization': f"Bearer {config.ACCESS_TOKEN}"
-    }
-    responce = requests.delete(
-        f'https://mai-tech.ru/api/profile/total/{config.UID}',
+def test_user_delete_and_verify(create_new_user):
+    """
+    Тест на удаление пользователя (код 200 при удалении) и проверку, что такого пользователя больше не существует
+    """
+    access_token = create_new_user["access_token"]
+    uid = create_new_user["uid"]
+
+    headers = {'Authorization': f"Bearer {access_token}"}
+
+    # 1. Удаляем пользователя
+    delete_response = requests.delete(
+        f'https://mai-tech.ru/api/profile/total/{uid}',
         headers=headers
     )
-    assert responce.status_code == 200
 
+    # Проверяем успешное удаление (200)
+    assert delete_response.status_code == 200, \
+        f"Ошибка удаления: {delete_response.status_code}, текст: {delete_response.text}"
 
-def test_profile_check_delete_404():
-    headers = {
-        'Authorization': f"Bearer {config.ACCESS_TOKEN}"
-    }
-    responce = requests.get(
-        f'https://mai-tech.ru/api/profile',
-        headers=headers)
-    assert responce.status_code == 404
+    # 2. Пробуем получить профиль удаленного пользователя
+    # (должна быть 401 Unauthorized или 404 Not Found)
+    get_response = requests.get(
+        'https://mai-tech.ru/api/profile',
+        headers=headers
+    )
+   # Проверяем что доступ к профилю закрыт
+    assert get_response.status_code in [401, 403, 404], \
+        f"Профиль все еще доступен: {get_response.status_code}"

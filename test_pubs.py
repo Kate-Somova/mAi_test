@@ -19,18 +19,6 @@ def get_token():
     return data.get('access_token')
 
 
-# def test_get_pub_list():
-#    my_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjE1NzUzOTAsImlhdCI6MTc2MTUzOTM5MCwic2NvcGUiOiJhY2Nlc3NfdG9rZW4iLCJzdWIiOiJ0YXRhcnN0YW5AZ21haWwuY29tIn0.F9CpP-hMPulApA6GahylbtiaH6rXB8rn69royALh7Bk'
-#    headers = {
-#        'Authorization': f'Bearer {my_token}'
-#    }
-#    responce = requests.get(
-#        'https://mai-tech.ru/api/pubs/',
-#        headers=headers).json()
-#    print(responce)
-# Не отрабатывает, тайм-аут более 10 секунд
-
-
 def test_get_pub_detail(get_token):
     headers = {
         'Authorization': f"Bearer {get_token}"
