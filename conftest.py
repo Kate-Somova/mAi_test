@@ -2,6 +2,8 @@ import os
 import pytest
 import requests
 import config
+from dotenv import load_dotenv
+load_dotenv()
 
 
 @pytest.fixture
@@ -32,14 +34,15 @@ def get_token():
 
 
 @pytest.fixture
+# фикстура на создание нового пользователя (создание и удаление)
 def new_user_with_delete():
-    # фикстура на создание нового пользователя (создание и удаление)
     body = config.body_new_user.copy()
     BASE_URL = os.getenv("BASE_URL")
     response = requests.post(
         f'{BASE_URL}/auth/signup/',
         json=body
     )
+    print(f"DEBUG: Response text: {response.text}")
 
     data = response.json()
     access_token = data['access_token']
@@ -51,11 +54,9 @@ def new_user_with_delete():
 
     uid = profile_response.json()['uid']
 
+    #print (uid)
     yield {
-        "access_token": access_token,
-        "uid": uid,
-        "user_data": body,
-        "response_data": data
+        "access_token": access_token
     }
 
     requests.delete(
