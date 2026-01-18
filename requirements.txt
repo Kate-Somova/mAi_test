@@ -13,7 +13,7 @@ pluggy==1.6.0
 pycparser==2.23
 Pygments==2.19.2
 pyOpenSSL==25.3.0
-pytest==8.4.2
+pytest~=9.0.2
 pytest-check==2.6.0
 requests==2.32.5
 selenium==4.0.0
@@ -25,3 +25,5 @@ typing_extensions==4.15.0
 urllib3==2.5.0
 urllib3-secure-extra==0.1.0
 wsproto==1.2.0
+
+python-dotenv~=1.2.1
