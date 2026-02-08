@@ -3,7 +3,7 @@ USER_DATA = None
 UID = None
 
 body_new_user = {
-    "email": "test_3@example.com",
+    "email": "sei_17@sasmail.ru",
     "password": "string",
     "first_name": "Kate",
     "last_name": "Somova",
