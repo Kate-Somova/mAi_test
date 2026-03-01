@@ -11,14 +11,12 @@ load_dotenv()
 # фикстура на получение токена
 def get_token():
     # Получаем данные из .env
-    email = os.getenv("main_user_email")
-    password = os.getenv("main_user_password")
     BASE_URL = os.getenv("BASE_URL")
 
     # Логинимся
     response = requests.post(
         f'{BASE_URL}/auth/login/',
-        json={"email": email, "password": password},
+        json={"email": os.getenv("MAIN_USER_EMAIL"), "password": os.getenv("MAIN_USER_PASSWORD")},
         timeout=10
     )
     # Если статус не 200 - возвращаем ошибку

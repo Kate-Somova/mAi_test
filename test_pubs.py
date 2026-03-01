@@ -1,7 +1,7 @@
 import pytest_check as check
 import requests
 from pytest import fixture
-
+import allure
 
 @fixture()
 def get_token():
@@ -18,7 +18,7 @@ def get_token():
     data = responce.json()
     return data.get('access_token')
 
-
+@allure.feature('pubs')
 def test_get_pub_detail(get_token):
     headers = {
         'Authorization': f"Bearer {get_token}"
