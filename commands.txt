@@ -1,2 +1,62 @@
-Форматирование всего файла:
-Ctrl + Alt + L
+    Навигация по коду
+Поиск класса — Ctrl + N (Cmd + O)
+Поиск файла — Ctrl + Shift + N (Cmd + Shift + O)
+Поиск символа (метода/поля) — Ctrl + Alt + Shift + N (Cmd + Option + O)
+Перейти к определению — Ctrl + B или Ctrl + ЛКМ (Cmd + B или Cmd + ЛКМ)
+Посмотреть реализацию — Ctrl + Alt + B (Cmd + Option + B)
+Найти использование — Alt + F7 (Option + F7)
+Недавние файлы — Ctrl + E (Cmd + E)
+Навигация назад/вперёд — Ctrl + Alt + ←/→ (Cmd + Option + ←/→)
+Перейти к строке — Ctrl + G (Cmd + L)
+Структура текущего файла — Ctrl + F12 (Cmd + F12)
+
+    Редактирование кода
+Дублировать строку — Ctrl + D (Cmd + D)
+Удалить строку — Ctrl + Y (Cmd + Backspace)
+Переместить строку вверх/вниз — Alt + Shift + ↑/↓ (Option + Shift + ↑/↓)
+Закомментировать/раскомментировать строку — Ctrl + / (Cmd + /)
+Закомментировать блок — Ctrl + Shift + / (Cmd + Shift + /)
+Форматировать код — Ctrl + Alt + L (Cmd + Option + L)
+Оптимизировать импорты — Ctrl + Alt + O (Ctrl + Option + O)
+Показать подсказку (документацию) — Ctrl + Q (F1 или Ctrl + J)
+Быстрое исправление (Show Intentions) — Alt + Enter (Option + Enter)
+
+    Рефакторинг
+Переименование — Shift + F6
+Извлечь переменную — Ctrl + Alt + V (Cmd + Option + V)
+Извлечь метод — Ctrl + Alt + M (Cmd + Option + M)
+Извлечь константу — Ctrl + Alt + C (Cmd + Option + C)
+Извлечь поле — Ctrl + Alt + F (Cmd + Option + F)
+
+    Запуск и отладка
+Запустить текущий файл/конфигурацию — Shift + F10 (Ctrl + R)
+Отладить — Shift + F9 (Ctrl + D)
+Шаг с обходом (Step Over) — F8
+Шаг с заходом (Step Into) — F7
+Продолжить выполнение — F9 (Cmd + Option + R)
+Переключить точку останова — Ctrl + F8 (Cmd + F8)
+
+    Поиск и замена
+Найти в текущем файле — Ctrl + F (Cmd + F)
+Заменить в текущем файле — Ctrl + R (Cmd + R)
+Найти везде (во всём проекте) — Ctrl + Shift + F (Cmd + Shift + F)
+Заменить везде — Ctrl + Shift + R (Cmd + Shift + R)
+
+    Управление окнами и панелями
+Закрыть текущую вкладку — Ctrl + F4 (Cmd + W)
+Переключение между вкладками — Alt + ←/→ (Ctrl + ←/→)
+Скрыть/показать все окна инструментов — Ctrl + Shift + F12 (Cmd + Shift + F12)
+Активировать окно инструментов (например, Terminal) — Alt + номер_окна (Cmd + номер_окна)
+Alt + 1 — Project
+Alt + 4 — Run
+Alt + 5 — Debug
+Alt + 9 — Version Control
+Поиск действий (найти любую команду) — Ctrl + Shift + A (Cmd + Shift + A)
+
+    Прочие полезные
+Быстрый просмотр определения — Ctrl + Shift + I (Cmd + Shift + I)
+Переключение между последними правками — Ctrl + Shift + Backspace (Cmd + Shift + Backspace)
+Генерация кода (getter/setter и т.п.) — Alt + Insert (Cmd + N)
+Окружение конструкцией (if, try-catch) — Ctrl + Alt + T (Cmd + Option + T)
+Свернуть/развернуть блок кода — Ctrl + NumPad -/+ (Cmd + NumPad -/+)
+Выделить текущий блок — Ctrl + W (Option + ↑)
