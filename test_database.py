@@ -1,13 +1,12 @@
 import json
 import os
-import uuid
-
 import allure
 import psycopg2
 import psycopg2.extras
 import pytest
 import pytest_check as check
 from dotenv import load_dotenv
+from data_test import russian_name_airport
 
 load_dotenv()
 
@@ -249,8 +248,9 @@ def test_get_flight_id(db_cursor):
         assert flight_id_int == 970
         print(f"flight_id = {flight_id_int}")
 
+
 @allure.feature('Базы данных')
-@allure.story('Вытаскиваем из таблицы tickets несколько строк и работаем с ними')
+@allure.story('Вытаскиваем из таблицы tickets несколько строк и проверяем их')
 def test_select_tickets(db_cursor):
     with allure.step('Выполняем запрос'):
         db_cursor.execute(
@@ -259,31 +259,53 @@ def test_select_tickets(db_cursor):
         )
         rows = db_cursor.fetchall()
 
-    with allure.step('Выводим исходные строки'):
-        print("Исходные строки:",rows)
+    with allure.step('Выводим полученные строки'):
+        print("Исходные строки:", rows)
 
-    with allure.step('Обновляем фамилию Cazzaniga на Cazza и outbound на True'):
-        db_cursor.execute("""
-            UPDATE tickets
-            SET passenger_name = REPLACE(passenger_name, 'Cazzaniga', 'Cazza')
-            WHERE book_ref = %s
-        """, ('RBUUIQ',))
+    with allure.step('Проверка количества строк'):
+        assert len(rows) == 4
 
-    with allure.step('Добавляем новую строку'):
-        db_cursor.execute("""
-            INSERT INTO tickets (ticket_no, book_ref, passenger_id, passenger_name, outbound)
-            VALUES (%s, %s, %s, %s, %s)
-        """, ('123456789', 'RBUUIQ', 'tst 101', 'Cruella De Vill', True))
+    with allure.step('Проверка уникальных ticket_no (первый столбец)'):
+        ticket_nos = {row[0] for row in rows}
+        assert len(ticket_nos) == 4
 
-    with allure.step('Повторно запрашиваем обновлённые строки'):
-        db_cursor.execute(
-            "SELECT * FROM tickets WHERE book_ref = %s",
-            ('RBUUIQ',)
-        )
-        updated_rows = db_cursor.fetchall()
+    with allure.step('Проверка наличия определённых passenger_id (третий столбец)'):
+        passenger_ids = {row[2] for row in rows}
+        expected_ids = {'IT 2425980678984', 'IT 8025360863298'}
+        assert passenger_ids == expected_ids
 
-    with allure.step('Выводим изменённые строки'):
-        print("Изменённые строки:", updated_rows)
+    with allure.step('Проверка уникальных пассажиров (четвёртый столбец)'):
+        passenger_names = {row[3] for row in rows}
+        assert len(passenger_names) == 2
+
+    # with allure.step('Обновляем фамилию Cazzaniga на Cazza и outbound на True'):
+    #     db_cursor.execute("""
+    #         UPDATE tickets
+    #         SET passenger_name = REPLACE(passenger_name, 'Cazzaniga', 'Cazza')
+    #         WHERE book_ref = %s
+    #     """, ('RBUUIQ',))
+    #
+    # with allure.step('Добавляем новую строку'):
+    #     db_cursor.execute("""
+    #         INSERT INTO tickets (ticket_no, book_ref, passenger_id, passenger_name, outbound)
+    #         VALUES (%s, %s, %s, %s, %s)
+    #     """, ('123456789', 'RBUUIQ', 'tst 101', 'Cruella De Vill', True))
+    #
+    #  with allure.step('Удаляем строку с ticket_no = 0005432000011 и outbound = True'):
+    #      db_cursor.execute(
+    #         "DELETE FROM tickets WHERE ticket_no = %s AND outbound = %s",
+    #          ('0005432000011', True)
+    #      )
+    #
+    # with allure.step('Повторно запрашиваем обновлённые строки'):
+    #     db_cursor.execute(
+    #         "SELECT * FROM tickets WHERE book_ref = %s",
+    #         ('RBUUIQ',)
+    #     )
+    #     updated_rows = db_cursor.fetchall()
+    #
+    # with allure.step('Выводим изменённые строки'):
+    #     print("Изменённые строки:", updated_rows)
 
 
 def get_airport_code_by_russian_name(cursor, russian_name):
@@ -295,21 +317,13 @@ def get_airport_code_by_russian_name(cursor, russian_name):
     result = cursor.fetchone()
     return result[0] if result else None
 
+
 @allure.feature('Базы данных')
 @allure.story('Получение кодов нескольких аэропортов по русским названиям')
-def test_get_airport_codes(db_cursor):
-    russian_names = [
-        "Анаа",
-        "Бухара",
-        "Цюрих",
-        "Йола",
-        "Якутск"
-    ]
-    codes = []
-    for name in russian_names:
-        with allure.step(f'Получаем код для "{name}"'):
-            code = get_airport_code_by_russian_name(db_cursor, name)
-            codes.append(code)
+@pytest.mark.parametrize('russian_name', russian_name_airport)
+def test_get_airport_codes(db_cursor, russian_name):
+    with allure.step(f'Получаем код для "{russian_name}"'):
+        code = get_airport_code_by_russian_name(db_cursor, russian_name)
 
-    with allure.step('Вывод всех полученных кодов'):
-        print(*codes)
+    with allure.step('Вывод полученного кода'):
+        print(f"{russian_name} - {code}")
